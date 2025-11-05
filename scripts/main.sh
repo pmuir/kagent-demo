@@ -16,6 +16,36 @@ set -o allexport
 source "$SCRIPT_DIR/../resources/.env.production"
 set +o allexport
 
+# Check required environment variables
+if [[ -z "$OPENAI_API_KEY" ]]; then
+  echo "Error: OPENAI_API_KEY is not set in .env.production"
+  exit 1
+fi
+
+if [[ -z "$DOCKER_REPO" ]]; then
+  echo "Error: DOCKER_REPO is not set in .env.production"
+  exit 1
+fi
+
+# Get the next Docker image tags based on the latest tag in Docker Hub
+echo "Fetching latest tag from Docker Hub for ${DOCKER_REPO}..."
+LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO}/tags?page_size=100" | \
+  jq -r '.results[].name' | \
+  grep -E '^[0-9]+$' | \
+  sort -n | \
+  tail -1)
+
+if [[ -z "$LATEST_TAG" ]]; then
+  echo "No numeric tags found, starting from 1"
+  LATEST_TAG=0
+fi
+
+TAG1=$((LATEST_TAG + 1))
+TAG2=$((LATEST_TAG + 2))
+
+echo "Latest tag: ${LATEST_TAG}"
+echo "Using tags: ${TAG1} and ${TAG2}"
+
 # hide the evidence
 clear
 
@@ -30,17 +60,15 @@ pe "kagent build ."
 
 pe "kagent run"
 
-pei "cp ../resources/.env.production ."
-
-pe "kagent deploy . --env-file .env.production --namespace kagent --image pmuir/demoagent:11 --platform linux/amd64,linux/arm64"
-
 pe "kagent add-mcp server-everything --command npx --arg @modelcontextprotocol/server-everything"
 
 pei "kagent build ."
 
 pei "kagent run"
 
-pei "kagent deploy . --env-file .env.production --namespace kagent --image pmuir/demoagent:12 --platform linux/amd64,linux/arm64"
+pei "cp ../resources/.env.production ."
+
+pe "kagent deploy . --env-file .env.production --namespace kagent --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
 
 pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient "
 
