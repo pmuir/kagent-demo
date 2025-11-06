@@ -1,0 +1,13 @@
+apiVersion: gloo.solo.io/v1alpha1
+kind: GlooTrafficPolicy
+metadata:
+  name: tool-policy
+spec:
+  targetRefs:
+    - group: gateway.kgateway.dev
+      kind: Backend
+      name: mcp-backend
+  rbac:
+    policy:
+      matchExpressions:
+        - 'jwt.sub == "alice" && mcp.tool.name == "echo"'

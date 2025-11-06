@@ -11,6 +11,18 @@ DEMO_CMD_COLOR="\033[0;37m"  # Non-bold white
 
 DEMO_PROMPT="${GREEN}➜ ${CYAN}\W ${COLOR_RESET}"
 
+# TEST mode configuration
+if [[ "$TEST" == "true" ]]; then
+  echo "TEST mode enabled"
+  DEMO_TYPE_SPEED=1000
+  DEMO_NO_WAIT=true
+fi
+
+# NO_SECURITY mode configuration
+if [[ "$NO_SECURITY" == "true" ]]; then
+  echo "NO_SECURITY mode enabled - skipping security setup"
+fi
+
 # Source environment variables and export them
 set -o allexport
 source "$SCRIPT_DIR/../resources/.env.production"
@@ -58,24 +70,30 @@ pei "cd demoagent"
 
 pe "kagent build ."
 
-pe "kagent run"
+if [[ "$TEST" != "true" ]]; then
+  pe "kagent run"
+fi
 
 pe "kagent add-mcp server-everything --command npx --arg @modelcontextprotocol/server-everything"
 
 pei "kagent build ."
 
-pei "kagent run"
+if [[ "$TEST" != "true" ]]; then
+  pei "kagent run"
+fi
 
 pei "cp ../resources/.env.production ."
 
 pe "kagent deploy . --env-file .env.production --namespace kagent --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
 
-pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient "
+if [[ "$NO_SECURITY" != "true" ]]; then
+  pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient "
 
-pe "kubectl label mcpservers.kagent.dev server-everything kagent.solo.io/waypoint=true"
+  pe "kubectl label mcpservers.kagent.dev server-everything kagent.solo.io/waypoint=true"
 
-pe "kubectl apply -f ../resources/access-policies"
+  pe "kubectl apply -f ../resources/access-policies"
 
-pe "kubectl apply -f ../resources/access-policies"
+  pe "kubectl apply -f ../resources/access-policies"
+fi
 
 cmd
