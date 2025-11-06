@@ -1,0 +1,11 @@
+agentName: demoagent
+language: python
+framework: adk
+modelProvider: openai
+modelName: gpt-4
+description: ""
+mcpServers:
+    - type: remote
+      name: server-everything
+      url: http://agentgateway:8080/mcp
+updatedAt: 2025-11-06T17:42:45.503061Z

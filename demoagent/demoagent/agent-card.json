@@ -1,0 +1,19 @@
+{
+  "name": "demoagent",
+  "description": "A demoagent agent",
+  "url": "localhost:8080",
+  "version": "0.0.1",
+  "capabilities": {
+    "streaming": true
+  },
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "skills": [
+    {
+      "id": "demoagent",
+      "name": "demoagent",
+      "description": "A demoagent agent",
+      "tags": ["demoagent"]
+    }
+  ]
+}
