@@ -11,7 +11,9 @@ spec:
     beforeExtAuth:
       providers:
         example:
-          issuer: gloo-gateway.gloo-system.svc.cluster.local:7777
+          issuer: kagent.kagent
+          audiences:
+            - kagent/demoagent
           jwks:
             local:
               key: | # replace this with the public key from the jwks.json url 
