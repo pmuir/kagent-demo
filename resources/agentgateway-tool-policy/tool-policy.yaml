@@ -8,6 +8,7 @@ spec:
       kind: Backend
       name: mcp-backend
   rbac:
-    policy:
+    action: Allow
+    policy:  
       matchExpressions:
-        - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && mcp.tool.name == "echo"'
+        - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && mcp.tool.name == "printEnv"'
