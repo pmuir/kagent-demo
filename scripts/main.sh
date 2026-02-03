@@ -61,7 +61,7 @@ echo "Latest tag: ${LATEST_TAG}"
 echo "Using tags: ${TAG1} and ${TAG2}"
 
 # hide the evidence
-clear
+#clear
 
 # Put your stuff here
 magic_prompt
@@ -86,16 +86,12 @@ fi
 
 pei "cp ../resources/.env.production ."
 
-pe "kagent deploy . --env-file .env.production --namespace kagent --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
+pe "kagent deploy . --env-file .env.production --namespace default --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
 
 if [[ "$NO_SECURITY" != "true" ]]; then
-  pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient"
+  pe "kubectl label namespaces default istio.io/dataplane-mode=ambient"
 
   pe "kubectl label mcpservers.kagent.dev server-everything kagent.solo.io/waypoint=true"
-
-  pe "kubectl apply -f ../resources/access-policies"
-
-  pe "kubectl apply -f ../resources/access-policies"
 fi
 
 cmd

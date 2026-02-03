@@ -86,7 +86,7 @@ fi
 
 pei "cp ../resources/.env.production ."
 
-pe "kagent deploy . --env-file .env.production --namespace kagent --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
+pe "kagent deploy . --env-file .env.production --namespace default --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
 
 pe "kubectl apply -f ../resources/agentgateway-base"
 

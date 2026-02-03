@@ -1,38 +1,36 @@
-apiVersion: gateway.kgateway.dev/v1alpha1
-kind: TrafficPolicy
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayPolicy
 metadata:
   name: tool-policy
 spec:
   targetRefs:
-    - group: gateway.kgateway.dev
-      kind: Backend
+    - group: agentgateway.dev
+      kind: AgentgatewayBackend
       name: mcp-backend
-  rbac:
-    action: Allow
-    policy:  
-      matchExpressions:
-        - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && mcp.tool.name == "printEnv"'
+  backend:
+    mcp: 
+      authorization:
+        action: Allow
+        policy:  
+          matchExpressions:
+            - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && mcp.tool.name == "printEnv"'
 ---
-apiVersion: gloo.solo.io/v1alpha1
-kind: GlooTrafficPolicy
-metadata:
-  name: jwt-policy
-spec:
-  targetRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: agentgateway
-  glooJWT:
-    beforeExtAuth:
-      providers:
-        example:
-          issuer: kagent.kagent
-          audiences:
-            - kagent/demoagent
-          jwks:
-            local:
-              key: | # replace this with the public key from the jwks.json url 
-                {"alg":"RS256","e":"AQAB","kid":"8g8vM9U6DOOgbSrobS5Mi1a8ba9W952wbrw8wO4z0tg","kty":"RSA","n":"sLhQ9QFA9qIbGvd4oTdlS2jhJc-ljuJI4iQFUaY2g-0P4gunmk9sdQL18koPEjUe3DTNHzVOTA8LOpnnjqxOi8ZuodKxMGgLd7QARMWJ1ogeLIaEkkOyTe03i7TxNv2o35eKy-CfPGvLIVNuLIWII3mJQUFo0rYAJxZxo7P0gKox-9iIJ58zr94uiRhr0yYT85bEffae7XNtSugbDFxSPfz9EScFeNtKqGqyL33i0QHEazkE4IJrisRctW0-dObeCwpIc97zvxo2ZGuMQr7ktXZZj9_RBSWhSENjNTjaEKWaIScD2Hl3bkdwpm5lDzV4KsZuBRjy-s1fLuSAKUKiEQ"}
+# apiVersion: agentgateway.dev/v1alpha1
+# kind: AgentgatewayPolicy
+# metadata:
+#   name: jwt-policy
+# spec:
+#   targetRefs:
+#     - group: gateway.networking.k8s.io
+#       kind: Gateway
+#       name: agentgateway
+#   traffic:
+#     jwtAuthentication:
+#       # mode: Strict
+#       mode: Permissive
+#       providers:
+#       - jwks:
+#           inline: '{"keys":[{"alg":"RS256","e":"AQAB","kid":"wf_Ncb2F7FiqSEBWp2eeIIghXwLOCEG1YtAjhcWB5ds","kty":"RSA","n":"tx71LVqUIz67_Wv6s-9KlzxA-uOfHXzj9HScpGgB0nSxAWo2oWHwxa-vL85OI0iSl2caEHTwYXqZNbBInJD0rk72zroxN-rQVLucpVvdZgQSBgEtxg846EVSjD5DAlvXJ85QuaCRTW7cl3sFXriYzDQkytZhODWcuxxiqrFOgbUIn1RsII38JEKhkItENQQRO52DCmx0ISYVYqGIJY1wNgDciAZghnc0iqcweBPPiF9oKrtH_tRTDYLfJkJfD3KYG9ygV0VSJTaWs0VYmHe465IiDktCS9gxmf_GOkvLQCovhjrXiZsGesmIMSmWrqISdjNKFCP9387TS2yEcohjew"}]}'
 ---
 apiVersion: kagent.dev/v1alpha2
 kind: Agent
@@ -50,3 +48,4 @@ spec:
       image: pmuir/demoagent:36
       replicas: 1
   type: BYO
+  
