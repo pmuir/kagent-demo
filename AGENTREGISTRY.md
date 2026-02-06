@@ -85,11 +85,15 @@ arctl agent deploy diceagent --runtime kubernetes --namespace default
 ```
 
 
-13. In the UI deploy to Vertex. You need these env vars
+13. In CLI deploy to Vertex.
 
 ```bash
-OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://telemetry.agentregistry.a.solo-agentic-demo.com/v1/traces
+arctl agent deploy diceagent  --runtime gcp --platform-id product-gcp --env OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=${TELEMETRY_ENDPOINT}
+
+
 ```
+
+
 
 14.With the CLI deploy to AWS
 
@@ -108,22 +112,22 @@ Click on the agent, then the DEFAULT endpoint then Test Endpoint.
 Paste this prompt into the input area
 
 ```json
-  {
-    "jsonrpc": "2.0",
-    "method": "tasks/send",
-    "id": "1",
-    "params": {
-      "id": "<task-id>",
-      "message": {
-        "role": "user",
-        "parts": [
-          {
-            "type": "text",
-            "text": "What can you do?"
-          }
-        ]
-      }
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [
+        {
+          "kind": "text",
+          "text": "what can you do?"
+        }
+      ],
+      "messageId": "msg-1",
+      "contextId": "f5bd2a40-74b6-4f7a-b649-ea3f09890003"
     }
   }
-```
+}```
 
